@@ -34,7 +34,7 @@
 // 1. CLOUD SERVER CONFIGURATION
 // ==============================================================================
 const char* SERVER_URL    = "https://seedling.acrmatech.com/api/v1/device/readings/";
-const char* DEVICE_ID     = "ESP8266-001";
+const char* DEVICE_ID     = "ESP32-001";
 const char* API_KEY       = "secret-esp32-demo-api-key-2026";
 const char* FIRMWARE_VER  = "2.0.0";
 
