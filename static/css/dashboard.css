@@ -1,0 +1,412 @@
+/* Smart Agriculture Dashboard Styles - Original Harvesta Layout */
+
+:root {
+    --bg-body: #f8faf8;
+    --bg-card: #ffffff;
+    --bg-sidebar-weather: #edf6ef;
+    --text-primary: #172b1d;
+    --text-muted: #64746b;
+    --dark-green: #0a331a;
+    --dark-green-badge: #0c3b20;
+    --accent-green: #52c47a;
+    --bright-green: #22c55e;
+    --light-green-border: #d7e8dc;
+    --font-heading: 'Outfit', sans-serif;
+    --font-body: 'Plus Jakarta Sans', sans-serif;
+}
+
+body.bg-body-custom {
+    background-color: var(--bg-body);
+    font-family: var(--font-body);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6, .font-heading {
+    font-family: var(--font-heading);
+}
+
+.bg-dark-green {
+    background-color: var(--dark-green) !important;
+}
+
+.text-accent-green {
+    color: var(--accent-green) !important;
+}
+
+.bg-accent-green {
+    background-color: var(--accent-green) !important;
+}
+
+.fs-7 {
+    font-size: 0.85rem;
+}
+
+.fs-8 {
+    font-size: 0.75rem;
+}
+
+.tracking-tight {
+    letter-spacing: -0.02em;
+}
+
+/* Top Navbar Live Pulse Chip */
+.pulse-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #22c55e;
+    border-radius: 50%;
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+    animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+    }
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+    }
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+    }
+}
+
+.device-status-chip {
+    background-color: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+/* Dashboard Header Banner */
+.dash-header-title {
+    font-family: var(--font-heading);
+    font-size: 1.65rem;
+    font-weight: 800;
+    color: #111827;
+    margin-bottom: 0.2rem;
+    letter-spacing: -0.02em;
+}
+
+.dash-header-desc {
+    color: #6b7280;
+    font-size: 0.85rem;
+    max-width: 900px;
+    margin-bottom: 1.25rem;
+    line-height: 1.45;
+}
+
+/* =========================================================
+   1. LEFT SIDEBAR WEATHER & CLIMATE CARD (MATCHING SCREENSHOT 2)
+   ========================================================= */
+.weather-sidebar-card {
+    background-color: var(--bg-sidebar-weather);
+    border: 1px solid var(--light-green-border);
+    border-radius: 16px;
+    padding: 1.75rem 1.25rem;
+    min-height: 520px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 4px 15px rgba(12, 59, 32, 0.03);
+}
+
+.weather-circle-icon {
+    width: 90px;
+    height: 90px;
+    background-color: #113820;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    box-shadow: 0 6px 16px rgba(17, 56, 32, 0.18);
+}
+
+.weather-temp-badge {
+    background-color: #3bb55d;
+    color: #ffffff;
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    font-weight: 800;
+    padding: 6px 20px;
+    border-radius: 30px;
+    display: inline-block;
+    letter-spacing: -0.02em;
+    box-shadow: 0 4px 12px rgba(59, 181, 93, 0.25);
+}
+
+.weather-time-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #374151;
+    margin-top: 0.75rem;
+}
+
+.weather-conditions-list {
+    margin-top: 1.5rem;
+}
+
+.weather-status-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: #1f2937;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.weather-status-row:last-child {
+    border-bottom: none;
+}
+
+/* =========================================================
+   2. TOP 4 METRIC SUMMARY CARDS ROW (MATCHING SCREENSHOT 2)
+   ========================================================= */
+.summary-cards-container {
+    background: #ffffff;
+    border: 1px solid var(--light-green-border);
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+}
+
+.metric-card-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.metric-icon-circle {
+    width: 38px;
+    height: 38px;
+    background-color: #113820;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+}
+
+.metric-title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #4b5563;
+    margin-bottom: 0.35rem;
+}
+
+.metric-badge-box {
+    background-color: #113820;
+    color: #ffffff;
+    font-family: var(--font-heading);
+    font-size: 1.45rem;
+    font-weight: 800;
+    padding: 2px 24px;
+    border-radius: 8px;
+    display: inline-block;
+    letter-spacing: -0.02em;
+    min-width: 60px;
+    margin-bottom: 0.35rem;
+}
+
+.metric-trend {
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.trend-up {
+    color: #3bb55d;
+}
+
+/* =========================================================
+   3. MAIN DASHBOARD CARDS & CHARTS
+   ========================================================= */
+.dash-card-box {
+    background: #ffffff;
+    border: 1px solid var(--light-green-border);
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    height: 100%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.dash-box-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #111827;
+    margin-bottom: 0.15rem;
+}
+
+.dash-box-subtitle {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-bottom: 1rem;
+}
+
+/* Donut Chart Center Label */
+.donut-center-container {
+    position: relative;
+    width: 100%;
+    max-width: 220px;
+    margin: 0 auto;
+}
+
+.donut-center-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+}
+
+.donut-center-number {
+    font-family: var(--font-heading);
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: #0c3b20;
+    line-height: 1.1;
+}
+
+.donut-center-caption {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+}
+
+/* Farmland Utilization Equalizer / Segmented Bars */
+.farmland-utilization-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.utilization-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.utilization-pct {
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #0c3b20;
+    letter-spacing: -0.04em;
+}
+
+.segmented-bars-container {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 48px;
+    margin-top: 1rem;
+}
+
+.segment-bar {
+    flex: 1;
+    height: 100%;
+    background-color: #0c3b20;
+    border-radius: 2px;
+    transition: height 0.4s ease, background-color 0.4s ease;
+}
+
+.segment-bar.active-bright {
+    background-color: #55b76f;
+}
+
+.segment-bar.active-light {
+    background-color: #8ce49a;
+}
+
+.segment-bar.inactive {
+    background-color: #e2ede5;
+}
+
+/* =========================================================
+   4. MOBILE RESPONSIVENESS (PHONES & TABLETS)
+   ========================================================= */
+
+@media (max-width: 991.98px) {
+    .weather-sidebar-card {
+        min-height: auto;
+        margin-bottom: 1.25rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .dash-header-title {
+        font-size: 1.35rem;
+    }
+    
+    .dash-header-desc {
+        font-size: 0.8rem;
+        margin-bottom: 1rem;
+    }
+
+    .summary-cards-container {
+        padding: 1rem 0.75rem;
+    }
+
+    .metric-badge-box {
+        font-size: 1.2rem;
+        padding: 2px 16px;
+    }
+
+    .metric-title {
+        font-size: 0.72rem;
+    }
+
+    .metric-trend {
+        font-size: 0.7rem;
+    }
+
+    .dash-card-box {
+        padding: 1rem;
+        border-radius: 12px;
+    }
+
+    /* Fluid charts wrapper */
+    .chart-container-responsive {
+        position: relative;
+        width: 100%;
+        height: 240px !important;
+    }
+
+    /* Touch buttons */
+    .btn, a.button, button {
+        min-height: 38px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .container, .container-fluid {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
+    .dash-header-title {
+        font-size: 1.2rem;
+    }
+
+    .metric-icon-circle {
+        width: 32px;
+        height: 32px;
+    }
+
+    .donut-center-container {
+        max-width: 170px;
+    }
+
+    .donut-center-number {
+        font-size: 1.2rem;
+    }
+}

@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+
+{% block title %}Smart Agriculture Dashboard with Weather Forecast Trend{% endblock %}
+
+{% block content %}
+<!-- Top Header Section -->
+<div class="row align-items-center mb-3">
+    <div class="col-lg-7">
+        <h1 class="dash-header-title">Smart Agriculture Nursery Dashboard</h1>
+        <p class="dash-header-desc">
+            Real-time IoT telemetry monitoring for seedling nursery microclimate, soil moisture dynamics, and automated drip irrigation.
+        </p>
+    </div>
+    <div class="col-lg-5 text-lg-end d-flex align-items-center justify-content-lg-end gap-2 flex-wrap">
+        <button id="btnSimulateFeed" class="btn btn-sm btn-outline-success d-flex align-items-center gap-1 shadow-sm">
+            <span class="material-symbols-outlined fs-6">bolt</span> Test Live Feed
+        </button>
+        <div class="input-group input-group-sm w-auto">
+            <span class="input-group-text bg-white border-end-0">
+                <span class="material-symbols-outlined fs-6 text-muted">memory</span>
+            </span>
+            <select class="form-select form-select-sm border-start-0 ps-0 fw-semibold" id="deviceSelector">
+                {% for dev in devices %}
+                    <option value="{{ dev.device_id }}" {% if dev == selected_device %}selected{% endif %}>
+                        {{ dev.device_id }} - {{ dev.name }}
+                    </option>
+                {% empty %}
+                    <option value="">ESP32-001 - Bench 1 Hydro-Node</option>
+                {% endfor %}
+            </select>
+        </div>
+        <a href="/admin/devices/device/add/" class="btn btn-sm btn-dark d-flex align-items-center gap-1">
+            <span class="material-symbols-outlined fs-6">add</span> Add Device
+        </a>
+    </div>
+</div>
+
+<!-- Main Dashboard Grid Layout Matching Reference Design -->
+<div class="row g-3">
+    <!-- LEFT COLUMN: Weather / Climate Microclimate Widget (Sidebar Card) -->
+    <div class="col-lg-3">
+        <div class="weather-sidebar-card shadow-sm text-center">
+            <div>
+                <!-- Top Leaf & Green Circle Illustration -->
+                <div class="weather-circle-icon">
+                    <span class="material-symbols-outlined text-white fs-1">nest_eco_leaf</span>
+                </div>
+
+                <!-- Large Temperature Pill Badge -->
+                <div class="mb-2">
+                    <span class="weather-temp-badge" id="liveTemp">
+                        {% if latest_reading %}{{ latest_reading.soil_temperature|floatformat:1 }}°C{% else %}--°C{% endif %}
+                    </span>
+                </div>
+
+                <!-- Live Telemetry Status -->
+                <div class="weather-time-label" id="liveTime">
+                    {% if latest_reading %}Live Telemetry ({{ latest_reading.received_at|timesince }} ago){% else %}Awaiting Device...{% endif %}
+                </div>
+
+                <div class="mt-2 mb-3">
+                    <span class="badge {% if selected_device and selected_device.is_online %}bg-success{% else %}bg-secondary{% endif %}" id="liveDeviceStatus">
+                        {% if selected_device and selected_device.is_online %}ESP32 Live Connected{% else %}Device Offline{% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Climate & Telemetry Conditions List -->
+            <div class="text-start weather-conditions-list">
+                <div class="weather-status-row">
+                    <span class="material-symbols-outlined text-success fs-5">cloud</span>
+                    <span>Microclimate: Optimal Range</span>
+                </div>
+                <div class="weather-status-row">
+                    <span class="material-symbols-outlined text-success fs-5">water_drop</span>
+                    <span id="liveMoistureText">
+                        Soil Moisture: {% if latest_reading %}{{ latest_reading.soil_moisture|floatformat:1 }}%{% else %}0.0%{% endif %}
+                    </span>
+                </div>
+                <div class="weather-status-row">
+                    <span class="material-symbols-outlined text-info fs-5">air</span>
+                    <span id="liveAirClimateText">
+                        Ambient Air: {% if latest_reading and latest_reading.air_temperature %}{{ latest_reading.air_temperature|floatformat:1 }}°C • {{ latest_reading.air_humidity|floatformat:1 }}%{% else %}25.0°C • 65.0%{% endif %}
+                    </span>
+                </div>
+                <div class="weather-status-row">
+                    <span class="material-symbols-outlined text-success fs-5">bolt</span>
+                    <span id="livePumpText">
+                        Pump: {% if latest_reading and latest_reading.pump_status %}ACTIVE (Irrigating){% else %}IDLE / OFF{% endif %}
+                    </span>
+                </div>
+                <div class="weather-status-row">
+                    <span class="material-symbols-outlined text-primary fs-5">mode_fan</span>
+                    <span id="liveFanText">
+                        Fan: {% if latest_reading and latest_reading.fan_status %}ACTIVE (Cooling){% else %}IDLE / OFF{% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: Metrics, Main Charts & Farmland Gauges -->
+    <div class="col-lg-9">
+        <!-- 1. Top 4 Metric Summary Cards Row (Matching Image Badges) -->
+        <div class="summary-cards-container shadow-sm mb-3">
+            <div class="row g-2 text-center text-md-start">
+                <!-- Metric 1: Nursery / User -->
+                <div class="col-6 col-md-3">
+                    <div class="metric-card-item">
+                        <div class="metric-icon-circle">
+                            <span class="material-symbols-outlined fs-5">agriculture</span>
+                        </div>
+                        <div>
+                            <div class="metric-title">Nursery Facilities</div>
+                            <div class="metric-badge-box" id="metricNurseries">{{ total_nurseries|default:1 }}</div>
+                            <div class="metric-trend trend-up">100% Active</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Metric 2: IoT Devices / Nodes -->
+                <div class="col-6 col-md-3">
+                    <div class="metric-card-item">
+                        <div class="metric-icon-circle">
+                            <span class="material-symbols-outlined fs-5">hub</span>
+                        </div>
+                        <div>
+                            <div class="metric-title">ESP32 Nodes</div>
+                            <div class="metric-badge-box" id="metricActiveDevices">{{ active_devices_count|default:1 }}</div>
+                            <div class="metric-trend trend-up">Live Telemetry</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Metric 3: Seedling Batches / Plants -->
+                <div class="col-6 col-md-3">
+                    <div class="metric-card-item">
+                        <div class="metric-icon-circle">
+                            <span class="material-symbols-outlined fs-5">potted_plant</span>
+                        </div>
+                        <div>
+                            <div class="metric-title">Growing Plants</div>
+                            <div class="metric-badge-box" id="metricSeedlings">{{ total_seedlings_count|default:150 }}</div>
+                            <div class="metric-trend trend-up">3 Batches Active</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Metric 4: System Alerts -->
+                <div class="col-6 col-md-3">
+                    <div class="metric-card-item">
+                        <div class="metric-icon-circle">
+                            <span class="material-symbols-outlined fs-5">notifications</span>
+                        </div>
+                        <div>
+                            <div class="metric-title">System Alerts</div>
+                            <div class="metric-badge-box" id="metricAlerts">{{ active_alerts_count|default:0 }}</div>
+                            <div class="metric-trend trend-up">System Healthy</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Middle Row: Main Telemetry Line Chart & Seedling Distribution Donut -->
+        <div class="row g-3 mb-3">
+            <!-- Main Chart: Real-time Telemetry Statistics -->
+            <div class="col-lg-8">
+                <div class="dash-card-box shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                        <div>
+                            <h2 class="dash-box-title">Real-Time Soil Telemetry & Microclimate</h2>
+                            <div class="dash-box-subtitle">Live moisture % (solid green) & temperature °C (dashed green)</div>
+                        </div>
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" data-time-range="1h">1H</button>
+                            <button type="button" class="btn btn-dark btn-sm active" data-time-range="today">24H</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" data-time-range="7d">7D</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" data-time-range="30d">30D</button>
+                        </div>
+                    </div>
+                    <div style="height: 230px; position: relative;">
+                        <canvas id="telemetryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Donut Chart: Seedling Growth Stage Distribution -->
+            <div class="col-lg-4">
+                <div class="dash-card-box shadow-sm text-center">
+                    <h2 class="dash-box-title text-start">Seedling Growth Stages</h2>
+                    <div class="dash-box-subtitle text-start">Batch development breakdown</div>
+                    <div class="donut-center-container my-1">
+                        <canvas id="distributionChart" height="165"></canvas>
+                        <div class="donut-center-text">
+                            <div class="donut-center-number" id="donutCenterNumber">{{ total_seedlings_count|default:150 }}</div>
+                            <div class="donut-center-caption">Plants</div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center gap-2 fs-8 text-muted mt-2 flex-wrap">
+                        <span><span class="badge p-1 bg-dark me-1"></span>Germinating</span>
+                        <span><span class="badge p-1 bg-success me-1"></span>Growing</span>
+                        <span><span class="badge p-1 bg-info me-1"></span>Ready</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Bottom Row: Weather Trends & Farmland Utilization Segmented Equalizer -->
+        <div class="row g-3">
+            <!-- Weather Trends Chart -->
+            <div class="col-lg-8">
+                <div class="dash-card-box shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-baseline gap-3">
+                            <h2 class="dash-box-title">Irrigation Cycles & Pump Activity</h2>
+                            <span class="fs-8 fw-bold text-success">Target Moisture: 30% - 50%</span>
+                        </div>
+                        <span class="fs-8 text-muted">24-Hour Timeline</span>
+                    </div>
+                    <div style="height: 90px; position: relative;" class="mt-2">
+                        <canvas id="trendsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Farmland Utilization & Segmented Bars -->
+            <div class="col-lg-4">
+                <div class="dash-card-box shadow-sm farmland-utilization-box">
+                    <div class="utilization-header">
+                        <div>
+                            <div class="fs-8 fw-bold tracking-tight text-uppercase text-muted">Moisture Health</div>
+                            <div class="fs-8 text-muted">Soil Hydro-Condition</div>
+                        </div>
+                        <div class="utilization-pct" id="healthPercentage">88%</div>
+                    </div>
+                    <!-- Segmented Equalizer Bars matching Reference Picture -->
+                    <div class="segmented-bars-container" id="segmentedBars">
+                        <!-- Dynamic segmented equalizer bars populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/dashboard.js?v=2.5"></script>
+{% endblock %}
+

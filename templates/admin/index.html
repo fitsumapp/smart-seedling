@@ -1,0 +1,425 @@
+{% extends "admin/base.html" %}
+
+{% load i18n static %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<style>
+    /* Premium Command Center Styles */
+    .command-hero {
+        background: linear-gradient(135deg, #072714 0%, #0f4625 60%, #166534 100%);
+        border-radius: 16px;
+        padding: 2rem 2.2rem;
+        color: #ffffff;
+        margin-bottom: 1.5rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(7, 39, 20, 0.15);
+    }
+
+    .command-hero::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 380px;
+        height: 380px;
+        background: radial-gradient(circle, rgba(34, 197, 94, 0.25) 0%, rgba(34, 197, 94, 0) 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .hero-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: #86efac;
+        margin-bottom: 10px;
+    }
+
+    .hero-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.95rem;
+        font-weight: 800;
+        margin: 0 0 6px 0;
+        letter-spacing: -0.02em;
+    }
+
+    .hero-desc {
+        color: #bbf7d0;
+        font-size: 0.92rem;
+        max-width: 620px;
+        margin: 0 0 1.25rem 0;
+        line-height: 1.45;
+    }
+
+    /* Metric Summary Row */
+    .metric-grid-4 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .metric-box-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 1.15rem 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        transition: all 0.2s ease-in-out;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    }
+
+    .metric-box-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(12, 59, 32, 0.06);
+        border-color: #86efac;
+    }
+
+    .metric-box-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        flex-shrink: 0;
+    }
+
+    .bg-green-soft { background: #ecfdf5; color: #059669; }
+    .bg-blue-soft { background: #eff6ff; color: #2563eb; }
+    .bg-amber-soft { background: #fffbeb; color: #d97706; }
+    .bg-emerald-soft { background: #0c3b20; color: #ffffff; }
+
+    .metric-box-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 2px;
+    }
+
+    .metric-box-val {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.45rem;
+        font-weight: 800;
+        color: #0c3b20;
+        line-height: 1.1;
+    }
+
+    /* Action Cards Grid */
+    .action-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+        gap: 1.1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .action-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        padding: 1.35rem 1.4rem;
+        text-decoration: none !important;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: all 0.2s ease-in-out;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+    }
+
+    .action-card:hover {
+        transform: translateY(-3px);
+        border-color: #22c55e;
+        box-shadow: 0 10px 25px rgba(34, 197, 94, 0.1);
+    }
+
+    .action-card-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 0.75rem;
+    }
+
+    .action-card-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+    }
+
+    .action-card-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #0c3b20;
+        margin: 0;
+    }
+
+    .action-card-desc {
+        font-size: 0.84rem;
+        color: #64748b;
+        line-height: 1.45;
+        margin-bottom: 1rem;
+    }
+
+    .action-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #16a34a;
+        padding-top: 0.75rem;
+        border-top: 1px solid #f1f5f9;
+    }
+
+    .pulse-dot-live {
+        width: 8px;
+        height: 8px;
+        background-color: #22c55e;
+        border-radius: 50%;
+        display: inline-block;
+        box-shadow: 0 0 8px rgba(34, 197, 94, 0.8);
+    }
+
+    /* Mobile Responsiveness for Command Center */
+    @media (max-width: 768px) {
+        .command-hero {
+            padding: 1.25rem 1rem !important;
+            border-radius: 12px !important;
+        }
+
+        .hero-title {
+            font-size: 1.35rem !important;
+        }
+
+        .hero-desc {
+            font-size: 0.82rem !important;
+            margin-bottom: 1rem !important;
+        }
+
+        .hero-buttons-wrap {
+            flex-direction: column !important;
+            width: 100% !important;
+        }
+
+        .hero-buttons-wrap a {
+            width: 100% !important;
+            justify-content: center !important;
+            text-align: center !important;
+        }
+
+        .metric-grid-4 {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 0.65rem !important;
+        }
+
+        .metric-box-card {
+            padding: 0.85rem !important;
+        }
+
+        .metric-box-val {
+            font-size: 1.3rem !important;
+        }
+
+        .action-grid-6 {
+            grid-template-columns: 1fr !important;
+            gap: 0.75rem !important;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .metric-grid-4 {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
+
+<div class="container-fluid px-0">
+    <!-- 1. Hero Command Banner -->
+    <div class="command-hero">
+        <h1 class="hero-title">Smart Nursery Command Center</h1>
+
+        <p class="hero-desc">
+            Welcome to the centralized management console for IoT hardware orchestration, autonomous precision irrigation threshold policies, seedling life cycle passports, and real-time environmental telemetry.
+        </p>
+        <div class="hero-buttons-wrap" style="display: flex; gap: 10px; flex-wrap: wrap;">
+
+            <a href="/dashboard/" class="button" style="background: #22c55e !important; color: #072714 !important; font-weight: 800; padding: 10px 20px; border-radius: 8px; font-size: 13px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                📊 Open Live Interactive Dashboard
+            </a>
+            <a href="/admin/devices/devicesetting/" class="button" style="background: rgba(255,255,255,0.15) !important; color: #ffffff !important; border: 1px solid rgba(255,255,255,0.3) !important; padding: 10px 18px; border-radius: 8px; font-size: 13px; text-decoration: none;">
+                💧 Configure Irrigation Thresholds
+            </a>
+        </div>
+    </div>
+
+    <!-- 2. Four Summary Metrics Row -->
+    <div class="metric-grid-4">
+        <div class="metric-box-card">
+            <div class="metric-box-icon bg-green-soft">🏡</div>
+            <div>
+                <div class="metric-box-label">Active Facilities</div>
+                <div class="metric-box-val">1 Nursery</div>
+            </div>
+        </div>
+
+        <div class="metric-box-card">
+            <div class="metric-box-icon bg-emerald-soft">⚡</div>
+            <div>
+                <div class="metric-box-label">ESP32 Nodes</div>
+                <div class="metric-box-val">1 Online</div>
+            </div>
+        </div>
+
+        <div class="metric-box-card">
+            <div class="metric-box-icon bg-blue-soft">🌱</div>
+            <div>
+                <div class="metric-box-label">Growing Crops</div>
+                <div class="metric-box-val">150 Plants</div>
+            </div>
+        </div>
+
+        <div class="metric-box-card">
+            <div class="metric-box-icon bg-amber-soft">🛡️</div>
+            <div>
+                <div class="metric-box-label">System Health</div>
+                <div class="metric-box-val">0 Open Alerts</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Section Title -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h2 style="font-family: Outfit, sans-serif; font-size: 1.25rem; font-weight: 800; color: #0c3b20; margin: 0;">
+            🌿 Nursery Operations & Management Modules
+        </h2>
+        <span style="font-size: 12px; color: #64748b; font-weight: 600;">Authorized Scope: Greenleaf Research Greenhouse</span>
+    </div>
+
+    <!-- 4. Interactive Action Cards Grid -->
+    <div class="action-grid">
+        <!-- Card 1: Interactive Dashboard -->
+        <a href="/dashboard/" class="action-card">
+            <div>
+                <div class="action-card-header">
+                    <div class="action-card-icon bg-emerald-soft">📊</div>
+                    <h3 class="action-card-title">Live Telemetry Dashboard</h3>
+                </div>
+                <div class="action-card-desc">
+                    View real-time microclimate line graphs, 24-hour soil moisture dynamics, live weather widgets, and batch growth distribution.
+                </div>
+            </div>
+            <div class="action-card-footer">
+                <span>Launch Telemetry Stream</span>
+                <span>→</span>
+            </div>
+        </a>
+
+        <!-- Card 2: Irrigation Settings -->
+        <a href="/admin/devices/devicesetting/" class="action-card">
+            <div>
+                <div class="action-card-header">
+                    <div class="action-card-icon bg-blue-soft">💧</div>
+                    <h3 class="action-card-title">Irrigation & Threshold Rules</h3>
+                </div>
+                <div class="action-card-desc">
+                    Calibrate automatic pump ON/OFF trigger percentages, sampling intervals, and pump safety runtime limits across all zones.
+                </div>
+            </div>
+            <div class="action-card-footer">
+                <span>Manage Thresholds</span>
+                <span>→</span>
+            </div>
+        </a>
+
+        <!-- Card 3: Seedling Batches -->
+        <a href="/admin/nursery/seedlingbatch/" class="action-card">
+            <div>
+                <div class="action-card-header">
+                    <div class="action-card-icon bg-green-soft">🌱</div>
+                    <h3 class="action-card-title">Seedling Batches & QR Passports</h3>
+                </div>
+                <div class="action-card-desc">
+                    Register new crop varieties, track seedling germination stages, and print high-resolution customer QR pot stickers.
+                </div>
+            </div>
+            <div class="action-card-footer">
+                <span>View & Print Labels</span>
+                <span>→</span>
+            </div>
+        </a>
+
+        <!-- Card 4: Sensor Readings -->
+        <a href="/admin/monitoring/sensorreading/" class="action-card">
+            <div>
+                <div class="action-card-header">
+                    <div class="action-card-icon bg-amber-soft">📡</div>
+                    <h3 class="action-card-title">Sensor Telemetry Logs</h3>
+                </div>
+                <div class="action-card-desc">
+                    Audit historical soil moisture %, soil temperature °C, raw ADC voltages, and pump activation logs streamed from hardware.
+                </div>
+            </div>
+            <div class="action-card-footer">
+                <span>Explore Sensor Data</span>
+                <span>→</span>
+            </div>
+        </a>
+
+        <!-- Card 5: Nursery Zones -->
+        <a href="/admin/nursery/nurseryzone/" class="action-card">
+            <div>
+                <div class="action-card-header">
+                    <div class="action-card-icon bg-green-soft">🔲</div>
+                    <h3 class="action-card-title">Nursery Zones & Benches</h3>
+                </div>
+                <div class="action-card-desc">
+                    Organize greenhouse propagation benches, partition microclimates, and assign dedicated IoT hydro-nodes to sectors.
+                </div>
+            </div>
+            <div class="action-card-footer">
+                <span>Manage Greenhouse Zones</span>
+                <span>→</span>
+            </div>
+        </a>
+
+        <!-- Card 6: Alerts & Warnings -->
+        <a href="/admin/alerts/alert/" class="action-card">
+            <div>
+                <div class="action-card-header">
+                    <div class="action-card-icon bg-amber-soft">🔔</div>
+                    <h3 class="action-card-title">System Alerts & Fault Alarms</h3>
+                </div>
+                <div class="action-card-desc">
+                    Track automatic threshold exceptions, moisture drops, sensor disconnections, and resolve critical operational alerts.
+                </div>
+            </div>
+            <div class="action-card-footer">
+                <span>Review Active Alerts</span>
+                <span>→</span>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock %}

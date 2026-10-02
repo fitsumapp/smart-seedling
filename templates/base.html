@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Smart Agriculture Dashboard | Smart Seedling{% endblock %}</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Google Material Symbols -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <!-- Custom Dashboard CSS -->
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-body-custom">
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark-green py-2 px-3 shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'dashboard:index' %}">
+                <span class="material-symbols-outlined text-accent-green fs-2">eco</span>
+                <span class="fw-bold tracking-tight text-white fs-5">SMART SEEDLING <span class="badge bg-accent-green text-dark ms-1 fs-8">IoT v1.0</span></span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="topNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+                    <li class="nav-item">
+                        <a class="nav-link active d-flex align-items-center gap-1" href="{% url 'dashboard:index' %}">
+                            <span class="material-symbols-outlined fs-5">dashboard</span> Live Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center gap-1" href="/admin/">
+                            <span class="material-symbols-outlined fs-5">admin_panel_settings</span> Unfold Admin
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center gap-1" href="/admin/devices/device/">
+                            <span class="material-symbols-outlined fs-5">developer_board</span> Devices
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center gap-1" href="/admin/nursery/seedlingbatch/">
+                            <span class="material-symbols-outlined fs-5">spa</span> Batches
+                        </a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="device-status-chip d-flex align-items-center gap-2 px-3 py-1 rounded-pill text-white fs-8">
+                        <span class="pulse-dot"></span>
+                        <span class="fw-semibold">System Active</span>
+                    </div>
+                    <a href="/admin/" class="btn btn-sm btn-outline-light d-flex align-items-center gap-1">
+                        <span class="material-symbols-outlined fs-5">tune</span> Control Panel
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="container-fluid py-3 px-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Chart.js & Bootstrap Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

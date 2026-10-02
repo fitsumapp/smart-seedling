@@ -1,0 +1,271 @@
+/* =========================================================
+   SMART AGRICULTURE INVERTED THEME:
+   1. Deep Dark-Forest Green Sidebar (from Hero Banner)
+   2. Soft Sage-Green Content Background (from previous Sidebar)
+   3. Crisp High-Contrast User Profile & Dropdown Menus
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap');
+
+/* Global Fonts */
+body, html, input, select, textarea, button {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+}
+
+h1, h2, h3, h4, .font-heading {
+    font-family: 'Outfit', sans-serif !important;
+}
+
+/* =========================================================
+   1. MAIN CONTENT AREA: SOFT SAGE-GREEN BACKGROUND
+   ========================================================= */
+body, html, #main, main, #content, .bg-white.flex.flex-col.grow {
+    background-color: #eef4ec !important;
+}
+
+/* Top Header Bar */
+header, [data-unfold-header], nav[aria-label="Top"] {
+    background-color: #ffffff !important;
+    border-bottom: 1px solid #d5e3d2 !important;
+}
+
+/* Table Cards & Content Boxes in Main Area */
+.border-base-200, .bg-base-50 {
+    border-color: #d5e3d2 !important;
+}
+
+/* =========================================================
+   2. SIDEBAR: DEEP DARK-FOREST GREEN
+   ========================================================= */
+#nav-sidebar, #nav-sidebar-inner, nav[aria-label="Sidebar"] {
+    background: linear-gradient(180deg, #051d0f 0%, #092c17 45%, #0e3d21 100%) !important;
+    border-right: 1px solid #144828 !important;
+}
+
+#nav-sidebar {
+    overflow-y: auto !important;
+    max-height: 100vh !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: #22c55e #051d0f !important;
+}
+
+#nav-sidebar::-webkit-scrollbar {
+    width: 5px;
+}
+
+#nav-sidebar::-webkit-scrollbar-thumb {
+    background-color: #22c55e;
+    border-radius: 4px;
+}
+
+#nav-sidebar::-webkit-scrollbar-track {
+    background: #051d0f;
+}
+
+
+/* Sidebar Brand Header Area */
+#nav-sidebar-inner .border-b {
+    border-color: #144828 !important;
+    background-color: #04180d !important;
+}
+
+#nav-sidebar-inner .border-b span, #nav-sidebar-inner .border-b a {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+}
+
+/* Section Group Headings */
+#nav-sidebar-inner .uppercase, 
+#nav-sidebar-inner h2, 
+#nav-sidebar-inner .font-semibold.text-xs {
+    color: #86efac !important; /* Luminous mint green */
+    font-size: 0.72rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.09em !important;
+    text-transform: uppercase !important;
+    margin-top: 1.35rem !important;
+    margin-bottom: 0.5rem !important;
+    padding-left: 0.5rem !important;
+}
+
+/* Sidebar Navigation Links (Excluding the popup dropdown menu links!) */
+#nav-sidebar-inner > div:not(.border-t) a,
+#nav-sidebar-inner ul a {
+    display: flex !important;
+    align-items: center !important;
+    height: 48px !important;
+    padding: 6px 14px 6px 6px !important;
+    margin: 5px 0 !important;
+    border-radius: 30px !important;
+    font-size: 0.88rem !important;
+    font-weight: 600 !important;
+    color: #d1fae5 !important; /* Soft light emerald text */
+    text-decoration: none !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Circular White/Glass Icon Badges inside Dark Sidebar */
+#nav-sidebar-inner > div:not(.border-t) a .material-symbols-outlined,
+#nav-sidebar-inner ul a .material-symbols-outlined {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    border-radius: 50% !important;
+    background-color: rgba(255, 255, 255, 0.12) !important;
+    backdrop-filter: blur(6px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    color: #86efac !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 19px !important;
+    margin-right: 12px !important;
+    transition: all 0.2s ease !important;
+}
+
+/* Hover State for Sidebar Links */
+#nav-sidebar-inner > div:not(.border-t) a:hover,
+#nav-sidebar-inner ul a:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+    transform: translateX(4px);
+}
+
+#nav-sidebar-inner > div:not(.border-t) a:hover .material-symbols-outlined,
+#nav-sidebar-inner ul a:hover .material-symbols-outlined {
+    background-color: #22c55e !important;
+    color: #051d0f !important;
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.5) !important;
+}
+
+/* ACTIVE ITEM: Luminous Emerald / Neon Green Pill Container */
+#nav-sidebar-inner a.bg-primary-50,
+#nav-sidebar-inner a[aria-current="page"],
+#nav-sidebar-inner a.active {
+    background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%) !important;
+    color: #051d0f !important;
+    font-weight: 800 !important;
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.35) !important;
+}
+
+#nav-sidebar-inner a.bg-primary-50 .material-symbols-outlined,
+#nav-sidebar-inner a[aria-current="page"] .material-symbols-outlined,
+#nav-sidebar-inner a.active .material-symbols-outlined {
+    background-color: #051d0f !important;
+    color: #22c55e !important;
+    border-color: transparent !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
+}
+
+#nav-sidebar-inner a.bg-primary-50 span,
+#nav-sidebar-inner a[aria-current="page"] span,
+#nav-sidebar-inner a.active span {
+    color: #051d0f !important;
+    font-weight: 800 !important;
+}
+
+/* =========================================================
+   3. USER PROFILE BAR AT BOTTOM (FIXING INVISIBLE DARK TEXT)
+   ========================================================= */
+#nav-sidebar-inner .border-t {
+    border-color: #144828 !important;
+    background-color: transparent !important;
+}
+
+/* User Name (Sarah Green) */
+#nav-sidebar-inner .border-t .font-semibold.text-important,
+#nav-sidebar-inner .border-t .truncate:first-child {
+    color: #ffffff !important;
+    font-size: 0.92rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.01em !important;
+}
+
+/* User Email (manager@smartseedling...) */
+#nav-sidebar-inner .border-t .text-subtle,
+#nav-sidebar-inner .border-t .text-xs {
+    color: #86efac !important;
+    font-size: 0.76rem !important;
+    font-weight: 500 !important;
+}
+
+/* Dropdown Chevron Icon */
+#nav-sidebar-inner .border-t .material-symbols-outlined {
+    color: #86efac !important;
+}
+
+/* User Profile Row Hover */
+#nav-sidebar-inner .border-t > div:hover,
+#nav-sidebar-inner .border-t > div.bg-base-100 {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border-radius: 12px !important;
+}
+
+/* =========================================================
+   4. USER POPUP DROPDOWN MENU (FIXING FAINT WASHED-OUT TEXT)
+   ========================================================= */
+#nav-sidebar-inner nav.absolute,
+#nav-sidebar-inner .border-t nav {
+    background-color: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22) !important;
+    padding: 6px !important;
+    z-index: 9999 !important;
+}
+
+/* Links inside the Popup Menu (View site, Change password) */
+#nav-sidebar-inner nav.absolute a,
+#nav-sidebar-inner .border-t nav a {
+    display: flex !important;
+    align-items: center !important;
+    height: auto !important;
+    padding: 8px 12px !important;
+    margin: 3px 0 !important;
+    border-radius: 8px !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    color: #1e293b !important; /* Bold Charcoal text on white background */
+    text-decoration: none !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+#nav-sidebar-inner nav.absolute a:hover,
+#nav-sidebar-inner .border-t nav a:hover {
+    background-color: #f0fdf4 !important;
+    color: #0c3b20 !important;
+    transform: none !important;
+}
+
+/* Logout Button inside the Popup Menu */
+#nav-sidebar-inner nav.absolute button,
+#nav-sidebar-inner .border-t nav button {
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    padding: 8px 12px !important;
+    margin: 3px 0 0 0 !important;
+    border-radius: 8px !important;
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    color: #dc2626 !important; /* Crisp Red text */
+    background-color: transparent !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+}
+
+#nav-sidebar-inner nav.absolute button:hover,
+#nav-sidebar-inner .border-t nav button:hover {
+    background-color: #fef2f2 !important;
+    color: #b91c1c !important;
+}
+
+#nav-sidebar-inner nav.absolute button .material-symbols-outlined,
+#nav-sidebar-inner .border-t nav button .material-symbols-outlined {
+    color: #dc2626 !important;
+    font-size: 18px !important;
+    margin-left: auto !important;
+}

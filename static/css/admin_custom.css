@@ -1,0 +1,109 @@
+/* Ultra-Premium Django Unfold Custom Agriculture Theme Styles */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+}
+
+h1, h2, h3, .font-heading {
+    font-family: 'Outfit', sans-serif !important;
+}
+
+/* Table Enhancements */
+table {
+    border-collapse: separate !important;
+    border-spacing: 0 4px !important;
+}
+
+tbody tr {
+    transition: all 0.2s ease-in-out !important;
+}
+
+tbody tr:hover {
+    background-color: #f6fcf8 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(12, 59, 32, 0.04) !important;
+}
+
+/* Custom Chip Badges */
+.badge-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.28rem 0.65rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.02em;
+}
+
+.badge-chip-green {
+    background-color: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.badge-chip-emerald {
+    background-color: #0c3b20;
+    color: #ffffff;
+}
+
+.badge-chip-blue {
+    background-color: #eff6ff;
+    color: #1e40af;
+    border: 1px solid #bfdbfe;
+}
+
+.badge-chip-amber {
+    background-color: #fffbeb;
+    color: #92400e;
+    border: 1px solid #fde68a;
+}
+
+.badge-chip-red {
+    background-color: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+.badge-chip-gray {
+    background-color: #f8fafc;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+}
+
+/* Pulse animation */
+@keyframes pulse-ring {
+    0% { transform: scale(0.95); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.6; }
+    100% { transform: scale(0.95); opacity: 1; }
+}
+
+.pulse-dot-live {
+    width: 8px;
+    height: 8px;
+    background-color: #22c55e;
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse-ring 2s infinite ease-in-out;
+}
+
+/* Action Button inside Table */
+.table-btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.15s ease-in-out;
+}
+
+.table-btn-action:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
