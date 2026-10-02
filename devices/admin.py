@@ -12,6 +12,16 @@ class DeviceSettingInline(TabularInline):
     model = DeviceSetting
     can_delete = False
     extra = 0
+    fields = (
+        'pump_on_threshold',
+        'pump_off_threshold',
+        'fan_on_temperature',
+        'fan_off_temperature',
+        'fan_on_humidity',
+        'reading_interval_seconds',
+        'upload_interval_seconds',
+        'automatic_mode'
+    )
 
 
 class DeviceStatusInline(TabularInline):
@@ -98,13 +108,40 @@ class DeviceAdmin(ModelAdmin):
 class DeviceSettingAdmin(ModelAdmin):
     list_display = (
         'device_header',
-        'thresholds_display',
+        'irrigation_thresholds_display',
+        'ventilation_thresholds_display',
         'intervals_display',
         'automatic_mode_badge',
         'safety_cutoff',
         'updated_at'
     )
     search_fields = ('device__device_id', 'device__name')
+    fieldsets = (
+        (_('Target IoT Hardware Node'), {
+            'fields': ('device', 'automatic_mode'),
+            'description': _('Assign threshold configurations to the IoT controller hardware unit.')
+        }),
+        (_('💧 Soil Moisture & Irrigation Pump Control'), {
+            'fields': (
+                ('pump_on_threshold', 'pump_off_threshold'),
+                'max_pump_runtime_seconds',
+            ),
+            'description': _('Control automated irrigation. Pump starts when soil moisture drops to ON threshold and stops at OFF threshold.')
+        }),
+        (_('💨 Ambient Air Temperature & Ventilation Fan Control (DHT22)'), {
+            'fields': (
+                ('fan_on_temperature', 'fan_off_temperature'),
+                'fan_on_humidity',
+            ),
+            'description': _('Control automated greenhouse cooling fan. Fan starts when air temperature reaches or exceeds ON threshold and stops when cooled to OFF threshold.')
+        }),
+        (_('⏱️ Telemetry Sampling & Cloud Upload Intervals'), {
+            'fields': (
+                ('reading_interval_seconds', 'upload_interval_seconds'),
+            ),
+            'classes': ('collapse',),
+        }),
+    )
 
     def get_queryset(self, request):
         qs = super().get_queryset(request).select_related('device__nursery_zone__nursery')
@@ -152,8 +189,6 @@ class DeviceSettingAdmin(ModelAdmin):
             return False
         return getattr(request.user, 'is_super_admin', False) and getattr(request.user, 'can_access_irrigation', True)
 
-
-
     @display(description=_('Device Node'), header=True)
     def device_header(self, obj):
         return [
@@ -161,13 +196,17 @@ class DeviceSettingAdmin(ModelAdmin):
             f"Hardware ID: {obj.device.device_id}"
         ]
 
-    @display(description=_('Irrigation Band (ON / OFF)'))
-    def thresholds_display(self, obj):
-        return f"ON ≤ {obj.pump_on_threshold}%  →  OFF ≥ {obj.pump_off_threshold}%"
+    @display(description=_('Irrigation Band (Pump ON / OFF)'))
+    def irrigation_thresholds_display(self, obj):
+        return f"💧 ON ≤ {obj.pump_on_threshold}% → OFF ≥ {obj.pump_off_threshold}%"
+
+    @display(description=_('Ventilation Band (Fan ON / OFF)'))
+    def ventilation_thresholds_display(self, obj):
+        return f"💨 ON ≥ {obj.fan_on_temperature}°C → OFF ≤ {obj.fan_off_temperature}°C | Hum ≥ {obj.fan_on_humidity}%"
 
     @display(description=_('Sampling / Sync'))
     def intervals_display(self, obj):
-        return f"Sampling: {obj.reading_interval_seconds}s  |  Upload: {obj.upload_interval_seconds}s"
+        return f"Sampling: {obj.reading_interval_seconds}s | Upload: {obj.upload_interval_seconds}s"
 
     @display(description=_('Automatic Mode'), boolean=True)
     def automatic_mode_badge(self, obj):

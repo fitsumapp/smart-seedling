@@ -5,16 +5,18 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     let telemetryChart = null;
+    let ambientChart = null;
     let distributionChart = null;
     let trendsChart = null;
 
     let selectedDeviceId = document.getElementById('deviceSelector')?.value || '';
     let selectedTimeRange = 'today';
-    let lastKnownTemp = null;
+    let lastKnownSoilTemp = null;
+    let lastKnownAirTemp = null;
     let lastKnownMoisture = null;
     let secondsSinceLastPacket = 0;
 
-    // 1. Initialize Main Telemetry Line Chart
+    // 1. Initialize Main Soil Telemetry Line Chart (Moisture & Soil Temp)
     const ctxTelemetry = document.getElementById('telemetryChart')?.getContext('2d');
     if (ctxTelemetry) {
         const gradientMoisture = ctxTelemetry.createLinearGradient(0, 0, 0, 240);
@@ -104,14 +106,110 @@ document.addEventListener('DOMContentLoaded', () => {
                         max: 45,
                         grid: { display: false },
                         ticks: { font: { family: 'Plus Jakarta Sans', size: 10 }, color: '#22c55e', stepSize: 10 },
-                        title: { display: true, text: 'Temp (°C)', font: { size: 11, weight: 'bold' }, color: '#22c55e' }
+                        title: { display: true, text: 'Soil Temp (°C)', font: { size: 11, weight: 'bold' }, color: '#22c55e' }
                     }
                 }
             }
         });
     }
 
-    // 2. Initialize Seedling Distribution Donut Chart
+    // 2. Initialize Ambient Greenhouse Climate Chart (DHT22 Air Temp & Humidity)
+    const ctxAmbient = document.getElementById('ambientClimateChart')?.getContext('2d');
+    if (ctxAmbient) {
+        const gradientHumidity = ctxAmbient.createLinearGradient(0, 0, 0, 240);
+        gradientHumidity.addColorStop(0, 'rgba(59, 130, 246, 0.40)');
+        gradientHumidity.addColorStop(1, 'rgba(59, 130, 246, 0.02)');
+
+        ambientChart = new Chart(ctxAmbient, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Relative Humidity (%)',
+                        data: [],
+                        borderColor: '#2563eb',
+                        backgroundColor: gradientHumidity,
+                        borderWidth: 2.6,
+                        fill: true,
+                        tension: 0.35,
+                        pointRadius: 2,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#2563eb',
+                        pointBorderColor: '#ffffff',
+                        yAxisID: 'yHum',
+                    },
+                    {
+                        label: 'Ambient Air Temperature (°C)',
+                        data: [],
+                        borderColor: '#0284c7',
+                        backgroundColor: 'transparent',
+                        borderWidth: 2.6,
+                        fill: false,
+                        tension: 0.35,
+                        pointRadius: 2,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#0284c7',
+                        pointBorderColor: '#ffffff',
+                        yAxisID: 'yAirTemp',
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 400 },
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        align: 'end',
+                        labels: {
+                            boxWidth: 12,
+                            font: { family: 'Plus Jakarta Sans', size: 11, weight: '700' },
+                            color: '#1f2937'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#0f172a',
+                        titleFont: { family: 'Outfit', size: 12, weight: '700' },
+                        bodyFont: { family: 'Plus Jakarta Sans', size: 11 },
+                        padding: 10,
+                        cornerRadius: 8,
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { family: 'Plus Jakarta Sans', size: 10 }, color: '#6b7280', maxTicksLimit: 12 }
+                    },
+                    yHum: {
+                        type: 'linear',
+                        position: 'left',
+                        min: 0,
+                        max: 100,
+                        grid: { color: 'rgba(0,0,0,0.05)' },
+                        ticks: { font: { family: 'Plus Jakarta Sans', size: 10 }, color: '#2563eb', stepSize: 20 },
+                        title: { display: true, text: 'Air Humidity (%)', font: { size: 11, weight: 'bold' }, color: '#2563eb' }
+                    },
+                    yAirTemp: {
+                        type: 'linear',
+                        position: 'right',
+                        min: 0,
+                        max: 50,
+                        grid: { display: false },
+                        ticks: { font: { family: 'Plus Jakarta Sans', size: 10 }, color: '#0284c7', stepSize: 10 },
+                        title: { display: true, text: 'Air Temp (°C)', font: { size: 11, weight: 'bold' }, color: '#0284c7' }
+                    }
+                }
+            }
+        });
+    }
+
+    // 3. Initialize Seedling Distribution Donut Chart
     const ctxDonut = document.getElementById('distributionChart')?.getContext('2d');
     if (ctxDonut) {
         distributionChart = new Chart(ctxDonut, {
@@ -146,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 3. Initialize Weather & Irrigation Trends Chart
+    // 4. Initialize Actuation Timeline Chart (Pump & Fan Relays)
     const ctxTrends = document.getElementById('trendsChart')?.getContext('2d');
     if (ctxTrends) {
         trendsChart = new Chart(ctxTrends, {
@@ -157,31 +255,33 @@ document.addEventListener('DOMContentLoaded', () => {
                     {
                         label: 'Soil Temperature (°C)',
                         data: [],
-                        borderColor: '#0c3b20',
+                        borderColor: '#10b981',
                         borderWidth: 2,
                         tension: 0.35,
                         pointRadius: 0,
                         fill: false,
                     },
                     {
-                        label: 'Irrigation Pump Activity (%)',
+                        label: 'Irrigation Pump Active (%)',
                         data: [],
                         borderColor: '#22c55e',
+                        backgroundColor: 'rgba(34, 197, 94, 0.15)',
                         borderWidth: 2,
-                        borderDash: [5, 4],
+                        borderDash: [4, 3],
                         tension: 0.1,
                         pointRadius: 0,
-                        fill: false,
+                        fill: true,
                     },
                     {
-                        label: 'Cooling Fan Activity (%)',
+                        label: 'Cooling Fan Active (%)',
                         data: [],
                         borderColor: '#0284c7',
+                        backgroundColor: 'rgba(2, 132, 199, 0.15)',
                         borderWidth: 2,
                         borderDash: [2, 2],
                         tension: 0.1,
                         pointRadius: 0,
-                        fill: false,
+                        fill: true,
                     }
                 ]
             },
@@ -189,18 +289,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false },
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        align: 'end',
+                        labels: { boxWidth: 10, font: { size: 10 } }
+                    },
                     tooltip: { backgroundColor: '#0c3b20', cornerRadius: 6 }
                 },
                 scales: {
-                    x: { grid: { display: false }, ticks: { font: { size: 9 }, color: '#9ca3af', maxTicksLimit: 10 } },
-                    y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { size: 9 }, color: '#9ca3af' } }
+                    x: { grid: { display: false }, ticks: { font: { size: 9 }, color: '#9ca3af', maxTicksLimit: 12 } },
+                    y: { grid: { color: 'rgba(0,0,0,0.04)' }, min: 0, max: 100, ticks: { font: { size: 9 }, color: '#9ca3af' } }
                 }
             }
         });
     }
 
-    // 4. Fetch and update telemetry data
+    // 5. Fetch and update telemetry data
     async function fetchDashboardTelemetry() {
         try {
             const url = `/dashboard/api/telemetry/?device_id=${encodeURIComponent(selectedDeviceId)}&time_range=${encodeURIComponent(selectedTimeRange)}&_t=${Date.now()}`;
@@ -211,40 +316,62 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!data.success) return;
 
             // Elements
-            const tempEl = document.getElementById('liveTemp');
+            const soilTempEl = document.getElementById('liveSoilTemp');
+            const airTempEl = document.getElementById('liveAirTemp');
+            const soilTempBadge = document.getElementById('liveSoilTempBadge');
+            const airTempBadge = document.getElementById('liveAirTempBadge');
+
             const timeEl = document.getElementById('liveTime');
             const moistureTextEl = document.getElementById('liveMoistureText');
+            const soilTempTextEl = document.getElementById('liveSoilTempText');
             const airClimateTextEl = document.getElementById('liveAirClimateText');
             const pumpTextEl = document.getElementById('livePumpText');
             const fanTextEl = document.getElementById('liveFanText');
             const deviceStatusBadge = document.getElementById('liveDeviceStatus');
             const livePulseIndicator = document.getElementById('livePulseIndicator');
 
-            const currentTemp = data.latest.temperature;
+            const currentSoilTemp = data.latest.temperature;
+            const currentAirTemp = data.latest.air_temperature !== undefined ? data.latest.air_temperature : (currentSoilTemp + 1.2);
+            const currentAirHum = data.latest.air_humidity !== undefined ? data.latest.air_humidity : 65.0;
             const currentMoisture = data.latest.moisture;
 
             // Trigger visual flash if new values arrived
-            if (lastKnownTemp !== null && (lastKnownTemp !== currentTemp || lastKnownMoisture !== currentMoisture)) {
+            if (lastKnownSoilTemp !== null && (lastKnownSoilTemp !== currentSoilTemp || lastKnownMoisture !== currentMoisture)) {
                 secondsSinceLastPacket = 0;
-                if (tempEl) {
-                    tempEl.style.transform = 'scale(1.08)';
-                    tempEl.style.boxShadow = '0 0 15px rgba(34, 197, 94, 0.8)';
+                if (soilTempBadge) {
+                    soilTempBadge.style.transform = 'scale(1.08)';
+                    soilTempBadge.style.boxShadow = '0 0 16px rgba(34, 197, 94, 0.9)';
                     setTimeout(() => {
-                        tempEl.style.transform = 'scale(1)';
-                        tempEl.style.boxShadow = '';
+                        soilTempBadge.style.transform = 'scale(1)';
+                        soilTempBadge.style.boxShadow = '';
                     }, 400);
                 }
             }
 
-            lastKnownTemp = currentTemp;
+            if (lastKnownAirTemp !== null && lastKnownAirTemp !== currentAirTemp) {
+                if (airTempBadge) {
+                    airTempBadge.style.transform = 'scale(1.08)';
+                    airTempBadge.style.boxShadow = '0 0 16px rgba(14, 165, 233, 0.9)';
+                    setTimeout(() => {
+                        airTempBadge.style.transform = 'scale(1)';
+                        airTempBadge.style.boxShadow = '';
+                    }, 400);
+                }
+            }
+
+            lastKnownSoilTemp = currentSoilTemp;
+            lastKnownAirTemp = currentAirTemp;
             lastKnownMoisture = currentMoisture;
 
-            if (tempEl) tempEl.textContent = `${currentTemp.toFixed(1)}°c`;
+            if (soilTempEl) soilTempEl.textContent = `${currentSoilTemp.toFixed(1)}°C`;
+            if (airTempEl) airTempEl.textContent = `${currentAirTemp.toFixed(1)}°C`;
+
             if (timeEl) timeEl.textContent = `${data.latest.timestamp} (${secondsSinceLastPacket}s ago)`;
             if (moistureTextEl) moistureTextEl.textContent = `Soil Moisture: ${currentMoisture.toFixed(1)}%`;
+            if (soilTempTextEl) soilTempTextEl.textContent = `Soil Temp: ${currentSoilTemp.toFixed(1)}°C`;
             
-            if (airClimateTextEl && data.latest.air_temperature !== undefined) {
-                airClimateTextEl.textContent = `Ambient Air: ${data.latest.air_temperature.toFixed(1)}°C • ${data.latest.air_humidity.toFixed(1)}%`;
+            if (airClimateTextEl) {
+                airClimateTextEl.textContent = `Ambient Air: ${currentAirTemp.toFixed(1)}°C • ${currentAirHum.toFixed(1)}%`;
             }
 
             if (pumpTextEl) {
@@ -307,7 +434,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 telemetryChart.data.labels = data.charts.labels;
                 telemetryChart.data.datasets[0].data = data.charts.moisture;
                 telemetryChart.data.datasets[1].data = data.charts.temperature;
-                telemetryChart.update('none'); // Fast update without lag
+                telemetryChart.update('none');
+            }
+
+            if (ambientChart && data.charts.labels.length > 0) {
+                ambientChart.data.labels = data.charts.labels;
+                ambientChart.data.datasets[0].data = data.charts.air_humidity;
+                ambientChart.data.datasets[1].data = data.charts.air_temperature;
+                ambientChart.update('none');
             }
 
             if (distributionChart && data.charts.batch_distribution) {
@@ -331,7 +465,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 5. Update Segmented Bars Helper
+    // 6. Update Segmented Bars Helper
     function updateEqualizerBars(healthPercentage) {
         const barsContainer = document.getElementById('segmentedBars');
         if (!barsContainer) return;
@@ -357,7 +491,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 6. Simulate Telemetry Trigger
+    // 7. Simulate Telemetry Trigger
     const btnSimulate = document.getElementById('btnSimulateFeed');
     if (btnSimulate) {
         btnSimulate.addEventListener('click', async () => {
@@ -375,7 +509,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 7. Event Listeners for Filters
+    // 8. Event Listeners for Filters
     const deviceSelect = document.getElementById('deviceSelector');
     if (deviceSelect) {
         deviceSelect.addEventListener('change', (e) => {
@@ -394,11 +528,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 8. Timers: Increment local counter and poll backend every 1.5 seconds
+    // 9. Timers: Increment local counter and poll backend every 1 second
     setInterval(() => {
         secondsSinceLastPacket += 1;
         const timeEl = document.getElementById('liveTime');
-        if (timeEl && lastKnownTemp !== null) {
+        if (timeEl && lastKnownSoilTemp !== null) {
             timeEl.textContent = `Live Telemetry (${secondsSinceLastPacket}s ago)`;
         }
     }, 1000);

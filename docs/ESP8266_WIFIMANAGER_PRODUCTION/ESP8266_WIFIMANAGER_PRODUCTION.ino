@@ -281,8 +281,25 @@ void sendTelemetry(float sTemp, float sMoist, int rawMoist, float aTemp, float a
     int httpCode = https.POST(requestBody);
 
     if (httpCode == HTTP_CODE_CREATED || httpCode == HTTP_CODE_OK) {
-      Serial.printf("📡 [CLOUD SYNC OK] Soil: %.1f°C, %.1f%% | Air: %.1f°C, %.1f%% | Pump: %s | Fan: %s | RSSI: %d dBm\n",
-                    sTemp, sMoist, aTemp, aHum, pumpState ? "ON" : "OFF", fanState ? "ON" : "OFF", WiFi.RSSI());
+      String responsePayload = https.getString();
+      
+      // Parse Dynamic Settings Synchronized from Django Admin
+      StaticJsonDocument<512> resDoc;
+      DeserializationError err = deserializeJson(resDoc, responsePayload);
+      if (!err && resDoc.containsKey("settings")) {
+        JsonObject s = resDoc["settings"];
+        if (s.containsKey("pump_on_threshold"))    PUMP_ON_THRESHOLD      = s["pump_on_threshold"];
+        if (s.containsKey("pump_off_threshold"))   PUMP_OFF_THRESHOLD     = s["pump_off_threshold"];
+        if (s.containsKey("fan_on_temperature"))   FAN_ON_TEMP_THRESHOLD  = s["fan_on_temperature"];
+        if (s.containsKey("fan_off_temperature"))  FAN_OFF_TEMP_THRESHOLD = s["fan_off_temperature"];
+        if (s.containsKey("fan_on_humidity"))     FAN_ON_HUMID_THRESHOLD = s["fan_on_humidity"];
+        if (s.containsKey("max_pump_runtime_seconds")) {
+          MAX_PUMP_RUN_MS = ((unsigned long)s["max_pump_runtime_seconds"]) * 1000;
+        }
+      }
+
+      Serial.printf("📡 [CLOUD SYNC OK] Soil: %.1f°C, %.1f%% | Air: %.1f°C, %.1f%% | Pump: %s | Fan: %s | FanThreshold: >=%.1f°C\n",
+                    sTemp, sMoist, aTemp, aHum, pumpState ? "ON" : "OFF", fanState ? "ON" : "OFF", FAN_ON_TEMP_THRESHOLD);
     } else {
       Serial.printf("❌ [CLOUD SYNC ERROR] HTTP %d\n", httpCode);
     }

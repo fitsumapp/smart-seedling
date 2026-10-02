@@ -116,11 +116,28 @@ class DeviceReadingIngestView(DeviceBaseAPIView):
         # 3. Evaluate alerts asynchronously or immediately via service layer
         AlertService.evaluate_reading(reading)
 
+        # Prepare active settings for instant on-the-fly threshold synchronization
+        settings_dict = {}
+        if hasattr(device, 'settings'):
+            s = device.settings
+            settings_dict = {
+                'pump_on_threshold': s.pump_on_threshold,
+                'pump_off_threshold': s.pump_off_threshold,
+                'fan_on_temperature': s.fan_on_temperature,
+                'fan_off_temperature': s.fan_off_temperature,
+                'fan_on_humidity': s.fan_on_humidity,
+                'reading_interval_seconds': s.reading_interval_seconds,
+                'upload_interval_seconds': s.upload_interval_seconds,
+                'automatic_mode': s.automatic_mode,
+                'max_pump_runtime_seconds': s.max_pump_runtime_seconds,
+            }
+
         return Response(
             {
                 'success': True,
                 'message': 'reading_saved',
-                'server_time': now.isoformat()
+                'server_time': now.isoformat(),
+                'settings': settings_dict
             },
             status=status.HTTP_201_CREATED
         )
