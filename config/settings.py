@@ -164,14 +164,14 @@ REST_FRAMEWORK = {
 # CSRF Trusted Origins
 CSRF_TRUSTED_ORIGINS = [
     origin.strip()
-    for origin in os.getenv('CSRF_TRUSTED_ORIGINS', 'http://127.0.0.1:8000,http://localhost:8000,http://10.125.32.249:8000').split(',')
+    for origin in os.getenv('CSRF_TRUSTED_ORIGINS', 'https://seedling.acrmatech.com,http://seedling.acrmatech.com,http://127.0.0.1:8000,http://localhost:8000').split(',')
     if origin.strip()
 ]
 
 # Login / Logout Redirects
-LOGIN_URL = 'login'
+LOGIN_URL = '/admin/login/'
 LOGIN_REDIRECT_URL = 'dashboard:index'
-LOGOUT_REDIRECT_URL = 'login'
+LOGOUT_REDIRECT_URL = '/admin/login/'
 
 
 def get_unfold_navigation(request):
